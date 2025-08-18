@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// ✅ Use environment variable first, then fallback to deployed backend URL
+const API =
+  import.meta.env.VITE_API_URL ||
+  "https://your-backend-service.onrender.com"; // <- replace with your actual Render backend URL
 
 export default function PublicNotes() {
   const [notes, setNotes] = useState([]);
@@ -14,11 +17,15 @@ export default function PublicNotes() {
   }, []);
 
   async function load() {
-    const res = await fetch(API + "/notes/public", {
-      headers: { Authorization: "Bearer " + token },
-    });
-    const data = await res.json();
-    setNotes(data || []);
+    try {
+      const res = await fetch(API + "/notes/public", {
+        headers: { Authorization: "Bearer " + token },
+      });
+      const data = await res.json();
+      setNotes(data || []);
+    } catch (err) {
+      setMsg("Failed to load public notes.");
+    }
   }
 
   async function createPublicNote() {
@@ -27,22 +34,26 @@ export default function PublicNotes() {
       return;
     }
 
-    const res = await fetch(API + "/notes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({ title, content, isPublic: true }),
-    });
+    try {
+      const res = await fetch(API + "/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ title, content, isPublic: true }),
+      });
 
-    if (res.ok) {
-      setTitle("");
-      setContent("");
-      setMsg("Note created successfully!");
-      load();
-    } else {
-      setMsg("Failed to create note.");
+      if (res.ok) {
+        setTitle("");
+        setContent("");
+        setMsg("Note created successfully!");
+        load();
+      } else {
+        setMsg("Failed to create note.");
+      }
+    } catch (err) {
+      setMsg("Error creating note.");
     }
   }
 
@@ -53,7 +64,6 @@ export default function PublicNotes() {
           Public Notes
         </h2>
 
-        {/* Message */}
         {msg && (
           <p className="text-center text-yellow-300 font-medium mb-4">{msg}</p>
         )}
@@ -96,7 +106,6 @@ export default function PublicNotes() {
                 key={n._id}
                 className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg relative"
               >
-                {/* Title + badge */}
                 <div className="flex justify-between items-start">
                   <h3 className="font-semibold text-lg text-gray-800">
                     {n.title}
@@ -106,15 +115,12 @@ export default function PublicNotes() {
                   </span>
                 </div>
 
-                {/* Content */}
                 <p className="text-gray-600 mt-2">{n.content}</p>
 
-                {/* Author */}
                 <p className="text-sm text-gray-500 mt-2">
                   By: {n.owner?.username || "Unknown"}
                 </p>
 
-                {/* Timestamp → bottom-right */}
                 <p className="text-xs text-gray-500 absolute bottom-2 right-3">
                   Last updated: {new Date(n.updatedAt).toLocaleString()}
                 </p>
