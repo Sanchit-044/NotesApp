@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-// ✅ Use environment variable first, then fallback to deployed backend URL
-const API =
-  import.meta.env.VITE_API_URL ||
-  " https://my-notesapp-1.onrender.com"; // <- replace with your actual Render backend URL
+const API = import.meta.env.VITE_API_URL || "https://my-notesapp-1.onrender.com/api";
 
 export default function PublicNotes() {
   const [notes, setNotes] = useState([]);
