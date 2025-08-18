@@ -7,6 +7,11 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
+// ✅ Test Route
+router.get("/test", (req, res) => {
+  res.json({ msg: "✅ Auth routes are working!" });
+});
+
 // Signup
 router.post(
   "/signup",
