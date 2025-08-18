@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const API =
   import.meta.env.VITE_API_URL ||
-  "https://your-backend-service.onrender.com"; // ✅ Use Render backend
+  " https://my-notesapp-1.onrender.com"; // ✅ Use Render backend
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
