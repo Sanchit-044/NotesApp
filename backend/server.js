@@ -13,8 +13,16 @@ import notesRoutes from "./routes/noteRoutes.js";
 
 const app = express();
 
+// ✅ CORS setup - allow your frontend to talk to backend
+app.use(
+  cors({
+    origin: ["https://notesapp-frontend-hfwm.onrender.com"], // your frontend site
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Routes
