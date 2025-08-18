@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-const API =
-  import.meta.env.VITE_API_URL ||
-  " https://my-notesapp-1.onrender.com"; // ✅ Use Render backend
+const API = import.meta.env.VITE_API_URL || "https://my-notesapp-1.onrender.com/api";
+
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
