@@ -39,23 +39,28 @@ export default function Signup({ onNavigate, onSignup }) {
       return;
     }
 
-    const res = await fetch(API + "/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: name, email, password: pw }),
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch(`${API}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: name, email, password: pw }),
+      });
 
-    if (res.ok && data.token) {
-      localStorage.setItem("token", data.token);
-      onSignup(); // ✅ update App state
-      onNavigate("dashboard");
-    } else {
-      if (data.errors) {
-        setMsg(data.errors.map((err) => err.msg).join(", "));
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token);
+        onSignup(); // ✅ update App state
+        onNavigate("dashboard");
       } else {
-        setMsg(data.msg || "Signup failed");
+        if (data.errors) {
+          setMsg(data.errors.map((err) => err.msg).join(", "));
+        } else {
+          setMsg(data.msg || "Signup failed");
+        }
       }
+    } catch (err) {
+      setMsg("Network error, please try again later.");
     }
   };
 
