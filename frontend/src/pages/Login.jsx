@@ -34,7 +34,7 @@ export default function Login({ onNavigate, onLogin }) {
     }
 
     try {
-      const res = await fetch(`${API}/api/auth/login`, {
+      const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password: pw }),
@@ -65,4 +65,51 @@ export default function Login({ onNavigate, onLogin }) {
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Welcome Back
         </h2>
-        <p className="text-gray-500 text-center
+        <p className="text-gray-500 text-center mb-8">
+          Log in to your account
+        </p>
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full mb-4 px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={pw}
+          onChange={(e) => setPw(e.target.value)}
+          className="w-full mb-4 px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        />
+
+        <button
+          onClick={login}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold shadow-lg transition duration-300"
+        >
+          Login
+        </button>
+
+        {/* ✅ Show multiple errors clearly */}
+        {msg && (
+          <div className="mt-4 text-center space-y-1">
+            {msg.split(", ").map((m, i) => (
+              <p key={i} className="text-red-600 text-sm">{m}</p>
+            ))}
+          </div>
+        )}
+
+        <p className="mt-6 text-center text-gray-600">
+          Don’t have an account?{" "}
+          <button
+            onClick={() => onNavigate("signup")}
+            className="text-indigo-600 hover:underline"
+          >
+            Sign up
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+}
