@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API =
+  import.meta.env.VITE_API_URL ||
+  "https://your-backend-service.onrender.com"; // ✅ Use Render backend
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
@@ -15,36 +17,48 @@ export default function Dashboard() {
 
   async function load() {
     if (!token) return;
-    const res = await fetch(API + "/notes", {
-      headers: { Authorization: "Bearer " + token },
-    });
-    const data = await res.json();
-    setNotes(data || []);
+    try {
+      const res = await fetch(`${API}/notes`, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      const data = await res.json();
+      setNotes(data || []);
+    } catch (err) {
+      console.error("❌ Error loading notes:", err);
+    }
   }
 
   async function createNote() {
-    const res = await fetch(API + "/notes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({ title, content, isPublic }),
-    });
-    if (res.ok) {
-      setTitle("");
-      setContent("");
-      setIsPublic(false);
-      load();
+    try {
+      const res = await fetch(`${API}/notes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ title, content, isPublic }),
+      });
+      if (res.ok) {
+        setTitle("");
+        setContent("");
+        setIsPublic(false);
+        load();
+      }
+    } catch (err) {
+      console.error("❌ Error creating note:", err);
     }
   }
 
   async function del(id) {
-    await fetch(API + "/notes/" + id, {
-      method: "DELETE",
-      headers: { Authorization: "Bearer " + token },
-    });
-    load();
+    try {
+      await fetch(`${API}/notes/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token },
+      });
+      load();
+    } catch (err) {
+      console.error("❌ Error deleting note:", err);
+    }
   }
 
   async function edit(n) {
@@ -52,15 +66,19 @@ export default function Dashboard() {
     const c = prompt("Content", n.content);
     const p = confirm("Make public?");
     if (t !== null) {
-      await fetch(API + "/notes/" + n._id, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({ title: t, content: c, isPublic: p }),
-      });
-      load();
+      try {
+        await fetch(`${API}/notes/${n._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({ title: t, content: c, isPublic: p }),
+        });
+        load();
+      } catch (err) {
+        console.error("❌ Error editing note:", err);
+      }
     }
   }
 
@@ -72,52 +90,52 @@ export default function Dashboard() {
         </h2>
 
         {/* Notes list */}
-<div className="grid gap-4">
-  {notes.map((n) => (
-    <div
-      key={n._id}
-      className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg relative"
-    >
-      {/* Title + badge */}
-      <div className="flex justify-between items-start">
-        <h3 className="font-semibold text-lg text-gray-800">{n.title}</h3>
-        <span
-          className={`text-xs px-2 py-1 rounded ${
-            n.isPublic
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {n.isPublic ? "Public 🔓" : "Private 🔒"}
-        </span>
-      </div>
+        <div className="grid gap-4">
+          {notes.map((n) => (
+            <div
+              key={n._id}
+              className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg relative"
+            >
+              {/* Title + badge */}
+              <div className="flex justify-between items-start">
+                <h3 className="font-semibold text-lg text-gray-800">{n.title}</h3>
+                <span
+                  className={`text-xs px-2 py-1 rounded ${
+                    n.isPublic
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {n.isPublic ? "Public 🔓" : "Private 🔒"}
+                </span>
+              </div>
 
-      {/* Content */}
-      <p className="text-gray-600 mt-2">{n.content}</p>
+              {/* Content */}
+              <p className="text-gray-600 mt-2">{n.content}</p>
 
-      {/* Buttons */}
-      <div className="mt-4 flex gap-2">
-        <button
-          onClick={() => edit(n)}
-          className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded transition"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => del(n._id)}
-          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded transition"
-        >
-          Delete
-        </button>
-      </div>
+              {/* Buttons */}
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => edit(n)}
+                  className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded transition"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => del(n._id)}
+                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded transition"
+                >
+                  Delete
+                </button>
+              </div>
 
-      {/* Timestamp → bottom-right */}
-      <p className="text-xs text-gray-500 absolute bottom-2 right-3">
-        Last updated: {new Date(n.updatedAt).toLocaleString()}
-      </p>
-    </div>
-  ))}
-</div>
+              {/* Timestamp */}
+              <p className="text-xs text-gray-500 absolute bottom-2 right-3">
+                Last updated: {new Date(n.updatedAt).toLocaleString()}
+              </p>
+            </div>
+          ))}
+        </div>
 
         {/* Create note form */}
         <div className="mt-8 bg-white/90 backdrop-blur-md p-6 rounded-xl shadow-lg">
