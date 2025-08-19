@@ -1,3 +1,6 @@
+Backend checking --- https://my-notesapp-1.onrender.com
+Website Link --- https://notesapp-frontend-hfwm.onrender.com
+
 # 📝 NotesApp – My First Full-Stack Project  
 
 This was my **first full-stack project**, built while learning the MERN (MongoDB, Express, React, Node.js) stack. The goal was to understand how frontend and backend interact, how authentication works, and how to deploy a complete application online.
